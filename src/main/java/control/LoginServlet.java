@@ -3,19 +3,15 @@ package control;
 import dao.UserDao;
 import entity.User;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import utils.MyBatisUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.io.InputStream;
 
 @WebServlet(name = "LoginServlet",urlPatterns = "/loginServlet")
 public class LoginServlet extends HttpServlet {
-
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
@@ -25,14 +21,9 @@ public class LoginServlet extends HttpServlet {
         String remember = request.getParameter("remember");
         User currentUser=new User(username,password);
         User user=null;
-        String resource = "mybatis-config.xml";
-        InputStream inputStream = null;
-        SqlSessionFactory sqlSessionFactory;
-        inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-        sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-        try(SqlSession session=sqlSessionFactory.openSession()){
+        try(SqlSession session=MyBatisUtil.getSqlSession()){
             UserDao userDao = session.getMapper(UserDao.class);
-            user = userDao.queryCountByKeywords(currentUser);
+            user=userDao.queryCountByKeywords(currentUser);
         }
        /* User currentUser=new User(username,password);
         UserService userService=new UserService();
